@@ -1,0 +1,96 @@
+GameInfo
+{
+	TitlePage = "graphics/titlepic.png"
+	CursorPic = "graphics/m_cursor.png"
+	PauseSign = "graphics/m_pause.png"
+	BorderFlat = "graphics/border_flat.png"
+	MenuBackButton = "graphics/m_back.png"
+	MenuFontColor_Title = "White"
+	MenuFontColor_Label = "Default"
+	MenuFontColor_Value = "Gray"
+	MenuFontColor_Action = "Gray"
+	MenuFontColor_Header = "White"
+	MenuFontColor_Highlight = "White"
+	MenuFontColor_Selection = "Gray"
+	FullscreenAutoAspect = 3
+	DimColor = "0b 0b 0b"
+	DimAmount = 0.8
+	PlayerClasses = "MyStandaloneGamePlayer"
+	StatusbarClass = "MyStandaloneGameHUD"
+}
+
+DoomEdNums
+{
+    16000 = Cylinder
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+ClearEpisodes
+Episode map01
+{
+	Name = "$TXT_MAP01_NAME"
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+Skill baby
+{
+	AutoUseHealth
+	AmmoFactor = 2
+	DamageFactor = 0.5
+	EasyBossBrain
+	SpawnFilter = Baby
+	Name = "$SKILL_BABY"
+}
+
+Skill easy
+{
+	EasyBossBrain
+	SpawnFilter = Easy
+	Name = "$SKILL_EASY"
+}
+
+Skill normal
+{
+	SpawnFilter = Normal
+	Name = "$SKILL_NORMAL"
+	DefaultSkill
+}
+
+Skill hard
+{
+	SpawnFilter = Hard
+	Name = "$SKILL_HARD"
+}
+
+Skill nightmare
+{
+	AmmoFactor = 2
+	FastMonsters
+	DisableCheats
+	RespawnTime = 12
+	SpawnFilter = Nightmare
+	Name = "$SKILL_NIGHTMARE"
+	MustConfirm
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+Map "MAP01" "$TXT_MAP01"
+{
+	LightMode = 3
+	Sky1 = "textures/sky1.png"
+}

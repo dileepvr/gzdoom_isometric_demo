@@ -1,0 +1,198 @@
+
+// Facing South
+Sprite PLAYA1, 40, 80
+{
+	Patch "sprites/baldguy_1.png", 0, 0
+	offset 20, 85
+}
+Sprite PLAYB1, 40, 80
+{
+	Patch PLAYA1, 0, 0
+	offset 20, 91
+}
+Sprite PLAYC1, 40, 80
+{
+	Patch PLAYA1, 0, 0
+	offset 20, 94
+}
+Sprite PLAYD1, 40, 80
+{
+	Patch PLAYA1, 0, 0
+	offset 20, 89
+}
+
+// Facing SSW
+Sprite PLAYA9AG, 48, 84
+{
+	Patch "sprites/baldguy_9.png", 0, 0
+	offset 24, 85
+}
+Sprite PLAYB9BG, 48, 84
+{
+	Patch PLAYA9AG, 0, 0
+	offset 24, 91
+}
+Sprite PLAYC9CG, 48, 84
+{
+	Patch PLAYA9AG, 0, 0
+	offset 24, 94
+}
+Sprite PLAYD9DG, 48, 84
+{
+	Patch PLAYA9AG, 0, 0
+	offset 24, 89
+}
+
+// Facing SW
+Sprite PLAYA2A8, 52, 85
+{
+	Patch "sprites/baldguy_2.png", 0, 0
+	offset 26, 85
+}
+Sprite PLAYB2B8, 52, 85
+{
+	Patch PLAYA2A8, 0, 0
+	offset 26, 91
+}
+Sprite PLAYC2C8, 52, 85
+{
+	Patch PLAYA2A8, 0, 0
+	offset 26, 94
+}
+Sprite PLAYD2D8, 52, 85
+{
+	Patch PLAYA2A8, 0, 0
+	offset 26, 89
+}
+
+// Facing WSW
+Sprite PLAYAAAF, 53, 84
+{
+	Patch "sprites/baldguy_A.png", 0, 0
+	offset 29, 85
+}
+Sprite PLAYBABF, 53, 84
+{
+	Patch PLAYAAAF, 0, 0
+	offset 29, 91
+}
+Sprite PLAYCACF, 53, 84
+{
+	Patch PLAYAAAF, 0, 0
+	offset 29, 94
+}
+Sprite PLAYDADF, 53, 84
+{
+	Patch PLAYAAAF, 0, 0
+	offset 29, 89
+}
+
+// Facing W
+Sprite PLAYA3A7, 50, 80
+{
+	Patch "sprites/baldguy_3.png", 0, 0
+	offset 30, 85
+}
+Sprite PLAYB3B7, 50, 80
+{
+	Patch PLAYA3A7, 0, 0
+	offset 30, 91
+}
+Sprite PLAYC3C7, 50, 80
+{
+	Patch PLAYA3A7, 0, 0
+	offset 30, 94
+}
+Sprite PLAYD3D7, 50, 80
+{
+	Patch PLAYA3A7, 0, 0
+	offset 30, 89
+}
+
+// Facing WNW
+Sprite PLAYABAE, 50, 80
+{
+	Patch "sprites/baldguy_B.png", 0, 0
+	offset 27, 85
+}
+Sprite PLAYBBBE, 50, 84
+{
+	Patch PLAYABAE, 0, 0
+	offset 27, 91
+}
+Sprite PLAYCBCE, 50, 84
+{
+	Patch PLAYABAE, 0, 0
+	offset 27, 94
+}
+Sprite PLAYDBDE, 50, 84
+{
+	Patch PLAYABAE, 0, 0
+	offset 27, 89
+}
+
+// Facing NW
+Sprite PLAYA4A6, 52, 85
+{
+	Patch "sprites/baldguy_4.png", 0, 0
+	offset 26, 85
+}
+Sprite PLAYB4B6, 52, 85
+{
+	Patch PLAYA4A6, 0, 0
+	offset 26, 91
+}
+Sprite PLAYC4C6, 52, 85
+{
+	Patch PLAYA4A6, 0, 0
+	offset 26, 94
+}
+Sprite PLAYD4D6, 52, 85
+{
+	Patch PLAYA4A6, 0, 0
+	offset 26, 89
+}
+
+// Facing NNW
+Sprite PLAYACAD, 48, 84
+{
+	Patch "sprites/baldguy_C.png", 0, 0
+	offset 24, 85
+}
+Sprite PLAYBCBD, 48, 84
+{
+	Patch PLAYACAD, 0, 0
+	offset 24, 91
+}
+Sprite PLAYCCCD, 48, 84
+{
+	Patch PLAYACAD, 0, 0
+	offset 24, 94
+}
+Sprite PLAYDCDD, 48, 84
+{
+	Patch PLAYACAD, 0, 0
+	offset 24, 89
+}
+
+// Facing N
+Sprite PLAYA5, 40, 80
+{
+	Patch "sprites/baldguy_5.png", 0, 0
+	offset 20, 85
+}
+Sprite PLAYB5, 40, 80
+{
+	Patch PLAYA5, 0, 0
+	offset 20, 91
+}
+Sprite PLAYC5, 40, 80
+{
+	Patch PLAYA5, 0, 0
+	offset 20, 94
+}
+Sprite PLAYD5, 40, 80
+{
+	Patch PLAYA5, 0, 0
+	offset 20, 89
+}

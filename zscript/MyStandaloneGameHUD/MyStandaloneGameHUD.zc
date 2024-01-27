@@ -1,0 +1,59 @@
+class MyStandaloneGameHUD : BaseStatusBar
+{
+	HUDFont mHUDFont;
+	MyStandaloneGamePlayer pmo;
+	double isoyaw, playeryaw, diffangle;
+	int cosine, sine, cursordist;
+
+	override void Init(void)
+	{
+	  Super.Init();
+	  SetSize(0, 320, 200);
+	  Font fnt = SmallFont;
+	  mHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 1, 1);
+	  cursordist = 75;
+	  cosine = 0; sine = 0;
+	}
+
+	override void Draw(int state, double TicFrac)
+	{
+	  if (CPlayer && CPlayer.mo)
+	    {
+	      pmo = MyStandaloneGamePlayer(CPlayer.mo);
+	    }
+
+	  BaseStatusBar.Draw(state, TicFrac);
+	  
+	  if (state == HUD_StatusBar || state == HUD_Fullscreen)
+	    {
+	      BeginHUD(forcescaled: true);
+	      
+	      DrawHealth();
+
+	      DrawCursor(sine, cosine);
+	    }
+	}
+
+	override void Tick()
+	{
+	  if (CPlayer && CPlayer.mo) {
+	    isoyaw = MyStandaloneGamePlayer(CPlayer.mo).ppawn_isoyaw;
+	    playeryaw = CPlayer.mo.angle; // Why doesn't pmo.angle work?
+	  }
+	  diffangle = pmo.deltaangle(playeryaw, isoyaw);
+	  cosine = (int)(-0.5*cursordist*Cos(diffangle)) - 10;
+	  sine = (int)(cursordist*Sin(diffangle));
+	  Super.Tick();
+	}
+
+	void DrawHealth(void)
+	{
+	  DrawString(mHUDFont, StringTable.Localize("$TXT_HUD_HEALTH") .. FormatNumber(pmo.player.health, 3), (44, -20));
+	  DrawString(mHUDFont, FormatNumber(isoyaw, 4), (0, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);		
+	}
+
+	void DrawCursor(int xpos, int ypos)
+	{
+	  DrawImage("sprites/dir_hair.png", (xpos, ypos), DI_SCREEN_CENTER|DI_ITEM_CENTER, scale: (0.5, 0.5));
+	}
+}

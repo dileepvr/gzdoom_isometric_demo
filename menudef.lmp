@@ -1,0 +1,74 @@
+DefaultListMenu
+{
+	Font "BigFont", "Untranslated"
+	LineSpacing 20
+	Selector "graphics/m_selector.png", -32, -5
+	Font "BigUpper", "White"
+	LineSpacing 18
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "MainMenu"
+{
+	LineSpacing 16
+	Position 97, 72
+	StaticText 74, 16, "$TXT_GAME_NAME"
+	TextItem "$MNU_NEWGAME", "n", "PlayerclassMenu"
+	TextItem "$MNU_OPTIONS", "o", "OptionsMenu"
+	TextItem "$MNU_LOADGAME", "l", "LoadGameMenu"
+	TextItem "$MNU_SAVEGAME", "s", "SaveGameMenu"
+	TextItem "$MNU_QUITGAME", "q", "QuitMenu"
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "EpisodeMenu"
+{
+	NetgameMessage "$NEWGAME"
+	Position 48, 63
+	StaticText 54, 38, "$MNU_EPISODE"
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "SkillMenu"
+{
+	StaticText 74, 16, "$MNU_CHOOSESKILL"
+	Position 160, 44
+}
+
+//-------------------------------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "LoadGameMenu"
+{
+	NetgameMessage "$LOADNET"
+	StaticTextCentered 160, -10, "$MNU_LOADGAME"
+	Position 80, 54
+	Class "LoadMenu"
+	//Size Clean
+}
+
+ListMenu "SaveGameMenu"
+{
+	StaticTextCentered 160, -10, "$MNU_SAVEGAME"
+	Position 80, 54
+	Class "SaveMenu"
+	//Size Clean
+}

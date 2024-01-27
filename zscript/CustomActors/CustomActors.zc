@@ -1,0 +1,24 @@
+Class Cylinder : actor
+{
+  Default
+  {
+	Radius 20;
+	Height 40;
+	Health 20;
+	+SOLID
+	+SHOOTABLE
+	+DONTGIB
+	+NOICEDEATH
+	+FIXMAPTHINGPOS
+  }
+
+  States
+  {
+  Spawn:
+    CYL1 A 1;
+    Goto Rest;
+  Rest:
+    CYL1 A 1;
+    Loop;
+  }
+}

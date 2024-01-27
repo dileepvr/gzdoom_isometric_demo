@@ -1,0 +1,168 @@
+class MyStandaloneGamePlayer : PlayerPawn
+{
+  int diffangle, face_cam_mult;
+  bool isocam_keypressed;
+  double ppawn_isoyaw, ppawn_isodist, ppawn_isopitch;
+  static const double camyaw[] = {180, 225, 270, 315, 0, 45, 90, 135}; // degrees
+  int ppawn_isoviewpoint, ppawn_camflags;
+  bool fancy_screen_rotate, isocam_changing;
+
+  property ppawn_isoyaw : ppawn_isoyaw;
+  property ppawn_isodist : ppawn_isodist;
+  property ppawn_isopitch : ppawn_isopitch;
+
+	Default
+	{
+		Speed 1;
+		Health 100;
+		Radius 20;
+		Height 80;
+		Mass 100;
+		PainChance 255;
+		Player.DisplayName "BaldGuy";
+		Player.CrouchSprite "PLYC";
+		Player.ViewHeight 60;
+		Player.ColorRange 144, 189;
+		Player.Colorset 0, "$TXT_COLOR_GREEN", 144, 191, 144;
+		Player.Colorset 1, "$TXT_COLOR_RED", 96, 143, 96;
+		Player.Colorset 2, "$TXT_COLOR_BLUE", 192, 239, 192;
+		MyStandaloneGamePlayer.ppawn_isoyaw 225;
+		MyStandaloneGamePlayer.ppawn_isodist 300;
+		MyStandaloneGamePlayer.ppawn_isopitch 30;
+	}
+
+	override void PostBeginPlay()
+	{
+	  Super.PostBeginPlay();
+	  face_cam_mult = 1; fancy_screen_rotate = true; isocam_changing = false; ppawn_isoviewpoint = 1;
+	  ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ISOMETRICSPRITES | VPSF_ORTHOGRAPHIC;
+	  isocam_keypressed = false;
+	  A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees!", 10, "BIGUPPER");
+	  if(player.camera == player.mo) // Setup isometric camera
+	    {
+	      player.camera = SpectatorCamera(Actor.Spawn("SpectatorCamera", pos));
+	      SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, ppawn_camflags);
+	      player.camera.player = player; // This seems necessary for ALLOWOUTOFBOUNDS as well. Don't know why.
+	    }
+	}
+
+	override void Tick()
+	{	  
+
+	  // Handle Camera movement
+	  if(player.cmd.buttons & BT_USER1 && !isocam_keypressed) {
+	    isocam_changing = true;
+	    ppawn_isoviewpoint -= 2;
+	    if(ppawn_isoviewpoint < 0) ppawn_isoviewpoint = 7;
+	  }
+	  if(player.cmd.buttons & BT_USER2 && !isocam_keypressed) {
+	    isocam_changing = true;
+	    ppawn_isoviewpoint += 2;
+	  }
+	  if(player.cmd.buttons & (BT_USER1 | BT_USER2)) isocam_keypressed = true;
+
+	  if(level.time % 20 == 0 && isocam_keypressed) { // Once every 20/35th of a second
+	    isocam_keypressed = false;
+	  }
+
+	  if(isocam_changing) {
+	    if(fancy_screen_rotate) { // Fancy screen rotation
+	      float angdiff = 0.125*(camyaw[ppawn_isoviewpoint % 8] - ppawn_isoyaw);
+	      if (abs(angdiff) > 5.25) {
+		if (angdiff > 22.5) angdiff -= 45.0;
+		else if (angdiff < -22.5) angdiff += 45.0;
+		if(abs(angdiff) > 5.25)
+		  ppawn_isoyaw += (int)(angdiff);
+		else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
+	      } else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
+	    } else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
+
+	    SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, -1);
+	    if(ppawn_isoyaw == camyaw[ppawn_isoviewpoint % 8]) isocam_changing = false;
+	  }
+
+	  diffangle = deltaangle(angle, ppawn_isoyaw);
+	  if (abs(diffangle) > 90) face_cam_mult = -1;
+	  else face_cam_mult = 1;
+	  
+	  Super.Tick();
+
+	  // Make movement less slippery (borrowed from NashMovement.pk3)
+	  if((Pos.Z == FloorZ) || bONMOBJ){
+	    A_SetSpeed(3.0);
+	    if((FindState('Pain') == NULL) || (CurState != FindState('Pain'))) {
+	      Vel.X *= 0.5; Vel.Y *= 0.5;
+	    }
+	  }
+	}
+
+	override void MovePlayer ()
+	{
+	  UserCmd cmd = player.cmd;
+	  let player = self.player;
+	  A_SetPitch(0); // Cancel pitch modification here
+	  if(cmd.sidemove) cmd.sidemove *= face_cam_mult;
+
+	  cmd.yaw -= GetPlayerInput(INPUT_YAW); // Cancel default mouse-turn first
+	  
+	  if(diffangle > 45 && diffangle < 135) cmd.yaw += 3*GetPlayerInput(INPUT_PITCH);
+	  else if(diffangle > -135 && diffangle < -45) cmd.yaw -= 3*GetPlayerInput(INPUT_PITCH);
+
+	  if(abs(diffangle) < 80 || abs(diffangle) > 100) cmd.yaw += face_cam_mult*GetPlayerInput(INPUT_YAW);
+		
+	  Super.MovePlayer();
+	}
+	
+	States
+	{
+	Spawn:
+		PLAY A -1;
+		Loop;
+	See:
+		PLAY ABCD 4;
+		Loop;
+	Missile:
+		PLAY A 12;
+		Goto Spawn;
+	Melee:
+		PLAY A 6 BRIGHT;
+		Goto Missile;
+	Pain:
+		PLAY A 4;
+		PLAY A 4 A_Pain();
+		Goto Spawn;
+	Death:
+		PLAY A 0 A_PlayerSkinCheck("AltSkinDeath");
+	Death1:
+		PLAY A 10;
+		PLAY A 10 A_PlayerScream();
+		PLAY A 10 A_NoBlocking();
+		PLAY AAA 10;
+		PLAY A -1;
+		Stop;
+	XDeath:
+		PLAY A 0 A_PlayerSkinCheck("AltSkinXDeath");
+	XDeath1:
+		PLAY A 5;
+		PLAY A 5 A_XScream();
+		PLAY A 5 A_NoBlocking();
+		PLAY AAAAA 5;
+		PLAY A -1;
+		Stop;
+	AltSkinDeath:
+		PLAY A 6;
+		PLAY A 6 A_PlayerScream();
+		PLAY AA 6;
+		PLAY A 6 A_NoBlocking();
+		PLAY AAA 6;
+		PLAY A -1;
+		Stop;
+	AltSkinXDeath:
+		PLAY A 5 A_PlayerScream();
+		PLAY A 0 A_NoBlocking();
+		PLAY A 5 A_SkullPop();
+		PLAY AAAAAA 5;
+		PLAY A -1;
+		Stop;
+	}
+}

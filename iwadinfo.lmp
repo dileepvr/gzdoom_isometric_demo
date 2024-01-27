@@ -1,0 +1,10 @@
+IWAD
+{
+	Name = "My Standalone Game"
+	BannerColors = "dea840", "003d59"
+	Autoname = "MyStandaloneGame"
+	Game = "Doom"
+	Config = "MyStandaloneGame"
+	IWADName = "MyStandaloneGame.ipk3"
+	Mapinfo = "mapinfo/mindefaults.txt"
+}

@@ -1,0 +1,8 @@
+#include "customlumps/baldguy_tex.lmp"
+
+// Cylinder
+Sprite CYL1A0, 39, 52
+{
+	Patch "sprites/cylinder.png", 0, 0
+	offset 20, 52
+}
