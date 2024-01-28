@@ -1,0 +1,8 @@
+class CameraDestroyerHandler : StaticEventHandler
+{
+        override void PlayerDisconnected (PlayerEvent e)
+	{
+	  // This is needed if a player disconnects from a multiplayer session
+	  if(players[e.PlayerNumber].camera) players[e.PlayerNumber].camera.destroy();
+	}
+}

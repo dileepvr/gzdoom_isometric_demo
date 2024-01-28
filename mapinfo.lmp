@@ -17,6 +17,7 @@ GameInfo
 	DimAmount = 0.8
 	PlayerClasses = "MyStandaloneGamePlayer"
 	StatusbarClass = "MyStandaloneGameHUD"
+	AddEventHandlers = "CameraDestroyerHandler"
 }
 
 DoomEdNums
