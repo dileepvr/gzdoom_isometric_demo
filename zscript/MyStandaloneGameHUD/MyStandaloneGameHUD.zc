@@ -41,8 +41,9 @@ class MyStandaloneGameHUD : BaseStatusBar
 	    playeryaw = CPlayer.mo.angle; // Why doesn't pmo.angle work?
 	  }
 	  diffangle = pmo.deltaangle(playeryaw, isoyaw);
-	  cosine = (int)(-0.5*cursordist*Cos(diffangle)) - 10;
+	  cosine = (int)(-0.5*cursordist*Cos(diffangle));
 	  sine = (int)(cursordist*Sin(diffangle));
+	  // Add offsets to these using libEye if the camera has a lagdistance > 0
 	  Super.Tick();
 	}
 

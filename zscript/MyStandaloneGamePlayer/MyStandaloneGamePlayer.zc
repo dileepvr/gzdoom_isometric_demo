@@ -41,8 +41,9 @@ class MyStandaloneGamePlayer : PlayerPawn
 	  if(player.camera == player.mo) // Setup isometric camera
 	    {
 	      player.camera = SpectatorCamera(Actor.Spawn("SpectatorCamera", pos));
+	      player.camera.tracer = player.mo; // Do you want the camera to follow any actor? Set it as tracer here.
 	      SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, ppawn_camflags);
-	      player.camera.player = player; // This seems necessary for ALLOWOUTOFBOUNDS as well. Don't know why.
+	      // SpectatorCamera(player.camera).lagdistance = 150.0; // Use for a lazy camera that only follows if you get away from center
 	    }
 	}
 
@@ -50,6 +51,10 @@ class MyStandaloneGamePlayer : PlayerPawn
 	{	  
 
 	  // Handle Camera movement
+	  if((player.cmd.buttons & BT_USER3) && (player.camera.tracer != NULL)) {
+	    // Center camera (useful if lagdistance > 0)
+	    player.camera.SetOrigin(player.camera.tracer.pos, true);
+	  }
 	  if(player.cmd.buttons & BT_USER1 && !isocam_keypressed) {
 	    isocam_changing = true;
 	    ppawn_isoviewpoint -= 2;

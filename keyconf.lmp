@@ -2,5 +2,7 @@ addkeysection "Isometric Camera View Control" "Isometric Camera Control"
 
 addmenukey "Rotate Left" +user1
 addmenukey "Rotate Right" +user2
+addmenukey "Center Camera" +user3
 bind Q +user1 
 bind E +user2
+bind Z +user3
