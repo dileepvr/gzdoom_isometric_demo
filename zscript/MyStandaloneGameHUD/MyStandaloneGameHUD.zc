@@ -43,7 +43,21 @@ class MyStandaloneGameHUD : BaseStatusBar
 	  diffangle = pmo.deltaangle(playeryaw, isoyaw);
 	  cosine = (int)(-0.5*cursordist*Cos(diffangle));
 	  sine = (int)(cursordist*Sin(diffangle));
-	  // Add offsets to these using libEye if the camera has a lagdistance > 0
+	  if(CPlayer.camera != NULL && CPlayer.camera.tracer != NULL)
+	  {
+	    if(CPlayer.camera.ViewPos.Flags & VPSF_ORTHOGRAPHIC)
+	    { // If using orthographic projection
+	      Vector3 playerdisp = CPlayer.camera.tracer.pos - CPlayer.camera.pos;
+	      diffangle = pmo.deltaangle(playerdisp.Angle(), isoyaw);
+	      // Translate game/map (x, y, z) position into screen (x, y) location
+	      double xproj = 320*Tan(CPlayer.camera.pitch)*3.0/CPlayer.camera.ViewPos.offset.xy.length();
+	      double yproj = Sin(CPlayer.camera.pitch)*xproj;
+	      double zproj = Cos(CPlayer.camera.pitch)*xproj;
+	      cosine -= (int)(playerdisp.xy.length()*Cos(diffangle)*yproj);
+	      cosine -= (int)(playerdisp.z*zproj);
+	      sine += (int)(playerdisp.xy.length()*Sin(diffangle)*xproj);
+	    } // else use libEye to locate camera.tracer's screen coordinates
+	  }
 	  Super.Tick();
 	}
 

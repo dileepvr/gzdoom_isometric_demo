@@ -36,15 +36,16 @@ class MyStandaloneGamePlayer : PlayerPawn
 	  Super.PostBeginPlay();
 	  face_cam_mult = 1; fancy_screen_rotate = true; isocam_changing = false; ppawn_isoviewpoint = 1;
 	  ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ISOMETRICSPRITES | VPSF_ORTHOGRAPHIC;
-	  isocam_keypressed = false;
-	  A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees!", 10, "BIGUPPER");
+	  isocam_keypressed = false;	  
 	  if(player.camera == player.mo) // Setup isometric camera
 	    {
 	      player.camera = SpectatorCamera(Actor.Spawn("SpectatorCamera", pos));
 	      player.camera.tracer = player.mo; // Do you want the camera to follow any actor? Set it as tracer here.
 	      SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, ppawn_camflags);
 	      // SpectatorCamera(player.camera).lagdistance = 150.0; // Use for a lazy camera that only follows if you get away from center
+	      // SpectatorCamera(player.camera).chasemode = 2; // 0: chase until tracer centered, 1: same but only when tracer is moving, 2: stop chase if tracer within lagdistance
 	    }
+	  player.camera.A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees!", 10, "BIGUPPER");
 	}
 
 	override void Tick()
