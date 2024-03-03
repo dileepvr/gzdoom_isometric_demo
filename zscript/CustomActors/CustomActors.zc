@@ -10,6 +10,7 @@ Class Cylinder : actor
 	+DONTGIB
 	+NOICEDEATH
 	+FIXMAPTHINGPOS
+	+ISOMETRICSPRITES
   }
 
   States

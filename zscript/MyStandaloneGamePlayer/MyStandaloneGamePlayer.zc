@@ -29,13 +29,14 @@ class MyStandaloneGamePlayer : PlayerPawn
 		MyStandaloneGamePlayer.ppawn_isoyaw 225;
 		MyStandaloneGamePlayer.ppawn_isodist 300;
 		MyStandaloneGamePlayer.ppawn_isopitch 30;
+		+ISOMETRICSPRITES
 	}
 
 	override void PostBeginPlay()
 	{
 	  Super.PostBeginPlay();
 	  face_cam_mult = 1; fancy_screen_rotate = true; isocam_changing = false; ppawn_isoviewpoint = 1;
-	  ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ISOMETRICSPRITES | VPSF_ORTHOGRAPHIC;
+	  ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ORTHOGRAPHIC;
 	  isocam_keypressed = false;	  
 	  if(player.camera == player.mo) // Setup isometric camera
 	    {
