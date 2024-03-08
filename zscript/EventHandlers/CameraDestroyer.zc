@@ -5,4 +5,18 @@ class CameraDestroyerHandler : StaticEventHandler
 	  // This is needed if a player disconnects from a multiplayer session
 	  if(players[e.PlayerNumber].camera) players[e.PlayerNumber].camera.destroy();
 	}
+	override void WorldLoaded (WorldEvent e) 
+	{
+		if(e.IsSaveGame)
+		{
+			for (int i = 0; i < MAXPLAYERS; i++)
+			{
+				if (PlayerInGame[i] && players[i].mo)
+				{
+					MyStandaloneGamePlayer pmo = MyStandaloneGamePlayer(players[i].mo);
+					SpectatorCamera(players[i].camera).Init(pmo.ppawn_isodist, pmo.ppawn_isoyaw, pmo.ppawn_isopitch, pmo.ppawn_camflags);
+				}
+			}
+		}
+	}
 }
