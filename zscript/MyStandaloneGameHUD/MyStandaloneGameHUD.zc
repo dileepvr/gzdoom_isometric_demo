@@ -50,9 +50,12 @@ class MyStandaloneGameHUD : BaseStatusBar
 	      Vector3 playerdisp = CPlayer.camera.tracer.pos - CPlayer.camera.pos;
 	      diffangle = pmo.deltaangle(playerdisp.Angle(), isoyaw);
 	      // Translate game/map (x, y, z) position into screen (x, y) location
-	      double xproj = 0.907173*200*Tan(CPlayer.camera.pitch)/CPlayer.camera.ViewPos.offset.xy.length();
-	      double yproj = Sin(CPlayer.camera.pitch)*xproj;
-	      double zproj = Cos(CPlayer.camera.pitch)*xproj;
+	      double xproj = 320/players[consoleplayer].camera.ViewPos.offset.length();
+	      double yproj = Sin(cpit)*xproj;
+	      double zproj = Cos(cpit)*xproj;
+	      /* double xproj = 0.907173*200*Tan(CPlayer.camera.pitch)/CPlayer.camera.ViewPos.offset.xy.length(); */
+	      /* double yproj = Sin(CPlayer.camera.pitch)*xproj; */
+	      /* double zproj = Cos(CPlayer.camera.pitch)*xproj; */
 	      cosine -= (int)(playerdisp.xy.length()*Cos(diffangle)*yproj);
 	      cosine -= (int)(playerdisp.z*zproj);
 	      sine += (int)(playerdisp.xy.length()*Sin(diffangle)*xproj);
