@@ -3,7 +3,11 @@ class MyStandaloneGameHUD : BaseStatusBar
 	HUDFont mHUDFont;
 	MyStandaloneGamePlayer pmo;
 	double isoyaw, playeryaw, diffangle;
-	int cosine, sine, cursordist;
+	int cosine, sine, selcos, selsin, hitcos, hitsin, cursordist;
+	float xscale, yscale, aspratio;
+	bool isosel;
+	cvar isoaim;
+	Actor actorhit;
 
 	override void Init(void)
 	{
@@ -11,15 +15,21 @@ class MyStandaloneGameHUD : BaseStatusBar
 	  SetSize(0, 320, 200);
 	  Font fnt = SmallFont;
 	  mHUDFont = HUDFont.Create(fnt, fnt.GetCharWidth("0"), Mono_CellLeft, 1, 1);
-	  cursordist = 75;
+	  cursordist = 200;
 	  cosine = 0; sine = 0;
-	}
+	  selcos = 0; selsin = 0;
+	  hitcos = 0; hitsin = 0;
+	  isosel = false;
+	  actorhit = null;
 
+	  isoaim = CVar.GetCVar("IsoAimAssist", players[consoleplayer]);
+	}
+	
 	override void Draw(int state, double TicFrac)
 	{
-	  if (CPlayer && CPlayer.mo)
+		if (CPlayer && CPlayer.mo)
 	    {
-	      pmo = MyStandaloneGamePlayer(CPlayer.mo);
+			pmo = MyStandaloneGamePlayer(CPlayer.mo);
 	    }
 
 	  BaseStatusBar.Draw(state, TicFrac);
@@ -30,48 +40,127 @@ class MyStandaloneGameHUD : BaseStatusBar
 	      
 	      DrawHealth();
 
+		  DrawWeaponInfo();
+
 	      DrawCursor(sine, cosine);
+
+		  if (isosel) DrawSelectCross(selsin, selcos);
+		  if (actorhit) DrawTargetCross(hitsin, hitcos, sine, cosine);
 	    }
 	}
 
 	override void Tick()
 	{
+	
 	  if (CPlayer && CPlayer.mo) {
 	    isoyaw = MyStandaloneGamePlayer(CPlayer.mo).ppawn_isoyaw;
 	    playeryaw = CPlayer.mo.angle; // Why doesn't pmo.angle work?
 	  }
-	  diffangle = pmo.deltaangle(playeryaw, isoyaw);
-	  cosine = (int)(-0.5*cursordist*Cos(diffangle));
-	  sine = (int)(cursordist*Sin(diffangle));
-	  if(CPlayer.camera != NULL && CPlayer.camera.tracer != NULL)
+	  if (!automapactive && (gamestate == GS_LEVEL))
 	  {
-	    if(CPlayer.camera.ViewPos.Flags & VPSF_ORTHOGRAPHIC)
-	    { // If using orthographic projection
-	      Vector3 playerdisp = CPlayer.camera.tracer.pos - CPlayer.camera.pos;
-	      diffangle = pmo.deltaangle(playerdisp.Angle(), isoyaw);
-	      // Translate game/map (x, y, z) position into screen (x, y) location
-	      double xproj = 320/players[consoleplayer].camera.ViewPos.offset.length();
-	      double yproj = Sin(cpit)*xproj;
-	      double zproj = Cos(cpit)*xproj;
-	      /* double xproj = 0.907173*200*Tan(CPlayer.camera.pitch)/CPlayer.camera.ViewPos.offset.xy.length(); */
-	      /* double yproj = Sin(CPlayer.camera.pitch)*xproj; */
-	      /* double zproj = Cos(CPlayer.camera.pitch)*xproj; */
-	      cosine -= (int)(playerdisp.xy.length()*Cos(diffangle)*yproj);
-	      cosine -= (int)(playerdisp.z*zproj);
-	      sine += (int)(playerdisp.xy.length()*Sin(diffangle)*xproj);
-	    } // else use libEye to locate camera.tracer's screen coordinates
+		  diffangle = pmo.deltaangle(playeryaw, isoyaw);
+		  cosine = (int)(-0.5*cursordist*Cos(diffangle));
+		  sine = (int)(cursordist*Sin(diffangle));
+		  selcos = 0; selsin = 0;
+		  hitcos = 0; hitsin = 0;
+		  xscale = 0.375*( screenblocks >= 10 ? Screen.GetWidth() : 0.1*screenblocks*Screen.GetWidth() );
+		  aspratio = (1.0 * Screen.GetWidth()) / (1.0 * Screen.GetHeight());
+		  if (aspratio > 1.0) xscale *= 1.777778/aspratio;
+		  selstruct mypsel = SelectionCycler(EventHandler.Find("SelectionCycler")).psels[consoleplayer];
+		  actorhit = AimAssistHandler(StaticEventHandler.Find("AimAssistHandler")).actorhit[consoleplayer];
+		  isosel = mypsel.isosel;
+
+		  if (CPlayer.camera != NULL && CPlayer.camera.tracer != NULL)
+		  {
+			  yscale = 1.253229 - 0.0616458*sin(CPlayer.camera.pitch)*sin(CPlayer.camera.pitch) - 0.191609*sin(CPlayer.camera.pitch);
+			  if (CPlayer.camera.ViewPos.Flags & VPSF_ORTHOGRAPHIC)
+			  { // If using orthographic projection
+				  Vector3 playerdisp = CPlayer.camera.tracer.pos - CPlayer.camera.pos;
+				  diffangle = pmo.deltaangle(playerdisp.Angle(), isoyaw);
+				  // Translate game/map (x, y, z) position into screen (x, y) location
+				  double xproj = xscale/players[consoleplayer].camera.ViewPos.offset.length();
+				  double yproj = Sin(CPlayer.camera.pitch)*xproj*yscale;
+				  double zproj = Cos(CPlayer.camera.pitch)*xproj*yscale;
+				  cosine -= (int)(playerdisp.xy.length()*Cos(diffangle)*yproj);
+				  cosine -= (screenblocks <= 10 ? (int)(yscale*StatusBar.RelTop) : 0);
+				  cosine -= (int)(playerdisp.z*zproj);
+				  sine += (int)(playerdisp.xy.length()*Sin(diffangle)*xproj);
+
+				  // Do the same for position of selected object or switch
+				  if (isosel)
+				  {
+					  Vector3 seldisp = mypsel.selpos - CPlayer.camera.pos
+						  - (0., 0., 0.5 * pmo.height * CPlayer.crouchfactor);
+					  diffangle = pmo.deltaangle(seldisp.Angle(), isoyaw);
+					  selcos -= (int)(seldisp.xy.length()*Cos(diffangle)*yproj + seldisp.z*zproj);
+					  selcos -= (screenblocks <= 10 ? (int)(yscale*StatusBar.RelTop) : 0);
+					  selsin += (int)(seldisp.xy.length()*Sin(diffangle)*xproj);
+				  }
+
+				  // Do the same for shootable actor being aimed at
+				  if (actorhit)
+				  {
+					  Vector3 hitdisp = actorhit.pos - CPlayer.camera.pos
+						  + (0., 0., (1.1*actorhit.height - (CPlayer.camera.tracer ? CPlayer.camera.tracer.height : pmo.height)))
+						  + (0., 0., CPlayer.camera.pos.z - (CPlayer.camera.tracer ?
+															 CPlayer.camera.tracer.pos.z : pmo.pos.z));
+					  diffangle = pmo.deltaangle(hitdisp.Angle(), isoyaw);
+					  hitcos -= (int)(hitdisp.xy.length()*Cos(diffangle)*yproj + hitdisp.z*zproj);
+					  hitcos -= (screenblocks <= 10 ? (int)(yscale*StatusBar.RelTop) : 0);
+					  hitsin += (int)(hitdisp.xy.length()*Sin(diffangle)*xproj);
+				  }
+			  }
+		  }
+		  Super.Tick();
 	  }
-	  Super.Tick();
 	}
 
 	void DrawHealth(void)
 	{
-	  DrawString(mHUDFont, StringTable.Localize("$TXT_HUD_HEALTH") .. FormatNumber(pmo.player.health, 3), (44, -20));
-	  DrawString(mHUDFont, FormatNumber(isoyaw, 4), (0, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);		
+		Fill(color(64, 0, 0, 0), 42, -23, 80, 12);
+		DrawString(mHUDFont, StringTable.Localize("$TXT_HUD_HEALTH") .. FormatNumber(pmo.player.health, 3), (44, -20));
+		// DrawString(mHUDFont, FormatNumber(isoyaw, 4), (0, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);		
+	}
+
+	void DrawWeaponInfo(void)
+	{
+		let curwep = CPlayer.ReadyWeapon;
+		Ammo am1, am2;
+		int am1amt, am2amt;
+		if (curwep)
+		{
+			[am1, am2, am1amt, am2amt] = GetCurrentAmmo();
+			if (curwep.bMELEEWEAPON)
+				DrawString(mHUDFont, curwep.GetClassName(), (50, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
+			else
+				DrawString(mHUDFont, curwep.GetClassName() .. FormatNumber(am1amt, 3), (44, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
+		}
 	}
 
 	void DrawCursor(int xpos, int ypos)
 	{
-	  DrawImage("sprites/dir_hair.png", (xpos, ypos), DI_SCREEN_CENTER|DI_ITEM_CENTER, scale: (0.5, 0.5));
+		Vector2 scaleFactor = GetHUDScale();
+		DrawImage(isoaim.GetBool() ? "sprites/aim_hair.png" : "sprites/dir_hair.png", (xpos/scaleFactor.x, ypos/scaleFactor.y),
+				  DI_SCREEN_CENTER|DI_ITEM_CENTER, scale: (0.5, 0.5));
+	}
+
+	void DrawSelectCross(int xpos, int ypos)
+	{
+		Vector2 scaleFactor = GetHUDScale();
+		DrawImage("sprites/sel_hair.png", (xpos/scaleFactor.x, ypos/scaleFactor.y),
+				  DI_SCREEN_CENTER|DI_ITEM_CENTER, scale: (0.5, 0.5));
+	}
+
+	void DrawTargetCross(int xpos, int ypos, int xpos2, int ypos2)
+	{
+		Vector2 scaleFactor = GetHUDScale();
+		DrawImage("sprites/tar_hair.png", (xpos/scaleFactor.x, ypos/scaleFactor.y),
+				  DI_SCREEN_CENTER|DI_ITEM_CENTER, scale: (0.5, 0.5));
+		if (isoaim.GetBool())
+		{
+	      int halfw = (int)(Screen.GetWidth()/2);
+	      int halfh = (int)(Screen.GetHeight()/2);
+	      Screen.DrawLine(xpos2+halfw, ypos2+halfh, xpos+halfw, ypos+halfh, Color(128, 128, 0, 128));
+		}
 	}
 }

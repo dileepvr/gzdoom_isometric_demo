@@ -1,0 +1,15 @@
+switches/normbutn = "sounds/DSSWTCHN.wav"
+
+body/foot1 = "sounds/FOOT1.wav"
+
+doors/dr1_open = "sounds/DSDOROPN.wav"
+doors/dr1_clos = "sounds/DSDORCLS.wav"
+
+weapons/plasmaf = "sounds/DSPLASMA.wav"
+weapons/plasmax = "sounds/DSFIRXPL.wav"
+weapons/fist = "sounds/DSPUNCH.wav"
+weapons/fistoof = "sounds/DSOOF.wav"
+weapons/rocklx = "sounds/DSBAREXP.wav"
+
+misc/ammo_pkup = "sounds/DSITEMUP.wav"
+misc/noselect = "sounds/NOSELECT.wav"

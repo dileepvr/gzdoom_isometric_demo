@@ -45,3 +45,43 @@ sp_usimp.txt contains the following permissions:
 Authors MAY use the contents of this file as a base for modification or
 reuse.  Permissions have been obtained from original authors for any of
 their resources modified or included in this file.
+
+//-------------------------------------------------------------------------------------------
+//
+// PROPERTY OF ID SOFTWARE
+//
+//-------------------------------------------------------------------------------------------
+
+Sound effects:
+- DSBAREXP.wav
+- DSDORCLS.wav
+- DSDOROPN.wav
+- DSFIRXPL.wav
+- DSITEMUP.wav
+- DSOOF.wav
+- DSPLASMA.wav
+- DSPUNCH.wav
+- DSSWTCHN.wav
+
+Images:
+- DOOR2_4.png
+- SW2S0.png
+- SW2S1.png
+- CELLA0.png
+- MISLC0.png
+- MISLD0.png
+- PLSEA0.png
+- PLSEB0.png
+- PLSEC0.png
+- PLSED0.png
+- PLSEE0.png
+- PLSSA0.png
+- PLSSB0.png
+- PUFFA0.png
+- PUFFB0.png
+- PUFFC0.png
+- PUFFD0.png
+- TLMPA0.png
+- TLMPB0.png
+- TLMPC0.png
+- TLMPD0.png

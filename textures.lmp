@@ -4,5 +4,116 @@
 Sprite CYL1A0, 39, 52
 {
 	Patch "sprites/cylinder.png", 0, 0
-	offset 20, 52
+	offset 20, 56
+}
+
+// Swi (TechLamp)	
+Sprite TLMPA0, 23, 80
+{
+	Patch "sprites/swi_lamp/TLMPA0.png", 0, 0
+	offset 11, 84
+}
+Sprite TLMPB0, 23, 80
+{
+	Patch "sprites/swi_lamp/TLMPB0.png", 0, 0
+	offset 11, 84
+}
+Sprite TLMPC0, 23, 80
+{
+	Patch "sprites/swi_lamp/TLMPC0.png", 0, 0
+	offset 11, 84
+}
+Sprite TLMPD0, 23, 80
+{
+	Patch "sprites/swi_lamp/TLMPD0.png", 0, 0
+	offset 11, 84
+}
+
+// MyPlasmaBall
+Sprite PLSSA0, 15, 14
+{
+	Patch "sprites/PLSSA0.png", 0, 0
+	offset 7, 18
+}
+Sprite PLSSB0, 13, 13
+{
+	Patch "sprites/PLSSB0.png", 0, 0
+	offset 6, 17
+}
+Sprite PLSEA0, 23, 23
+{
+	Patch "sprites/PLSEA0.png", 0, 0
+	offset 12, 20
+}
+Sprite PLSEB0, 39, 41
+{
+	Patch "sprites/PLSEB0.png", 0, 0
+	offset 19, 27
+}
+Sprite PLSEC0, 37, 35
+{
+	Patch "sprites/PLSEC0.png", 0, 0
+	offset 17, 27
+}
+Sprite PLSED0, 29, 29
+{
+	Patch "sprites/PLSED0.png", 0, 0
+	offset 13, 22
+}
+
+// MyFistPuff
+Sprite PUFFA0, 5, 5
+{
+	Patch "sprites/PUFFA0.png", 0, 0
+	offset 2, 3
+}
+Sprite PUFFB0, 9, 8
+{
+	Patch "sprites/PUFFB0.png", 0, 0
+	offset 4, 4
+}
+Sprite PUFFC0, 12, 11
+{
+	Patch "sprites/PUFFC0.png", 0, 0
+	offset 6, 5
+}
+Sprite PUFFD0, 15, 15
+{
+	Patch "sprites/PUFFD0.png", 0, 0
+	offset 8, 7
+}
+
+// Barrel explosion
+Sprite MISLC0, 88, 72
+{
+	Patch "sprites/MISLC0.png", 0, 0
+	offset 42, 34
+}
+Sprite MISLD0, 103, 86
+{
+	Patch "sprites/MISLD0.png", 0, 0
+	offset 50, 43
+}
+
+// MyPlasmaPistol pickup sprite
+Sprite PLASA0, 54, 16
+{
+	Patch "sprites/PLASA0.png", 0, 0
+	offset 27, 19
+}
+
+// Composite texture for switch
+Texture EXSWS0, 256, 128
+{
+   XScale 1.0
+   YScale 1.0
+   Patch "textures/nash_wall.png", 0, 0
+   Patch "textures/SW2S0.png", 112, 48
+}
+Texture EXSWS1, 256, 128
+{
+   XScale 1.0
+   YScale 1.0
+   Patch "textures/nash_wall.png", 0, 0
+   Patch "textures/SW2S1.png", 112, 48
 }

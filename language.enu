@@ -9,5 +9,6 @@ SKILL_HARD = "Hard";
 SKILL_NIGHTMARE = "Very Hard";
 
 TXT_MAP01 = "My Test Level";
+TXT_MAP02 = "My Second Level";
 
 TXT_HUD_HEALTH = "Health: ";

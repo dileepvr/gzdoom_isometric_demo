@@ -25,6 +25,24 @@ ListMenu "MainMenu"
 	TextItem "$MNU_QUITGAME", "q", "QuitMenu"
 }
 
+
+AddOptionMenu "OptionsMenuSimple"
+{
+	SubMenu "Isometric Mode Options", "IsoModOptions"
+}
+
+AddOptionMenu "OptionsMenu"
+{
+	SubMenu "Isometric Mode Options", "IsoModOptions"
+}
+
+OptionMenu "IsoModOptions"
+{
+    Title "Isometric Mode Options (Hardware Renderers only)"	
+    Option "Isometric Fog of War", "r_radarclipper", "OnOff"
+    Option "Visibility Through Level Geometry", "r_dithertransparency", "OnOff"
+}
+
 //-------------------------------------------------------------------------------------------
 //
 //

@@ -17,12 +17,15 @@ GameInfo
 	DimAmount = 0.8
 	PlayerClasses = "MyStandaloneGamePlayer"
 	StatusbarClass = "MyStandaloneGameHUD"
-	AddEventHandlers = "CameraDestroyerHandler"
+	AddEventHandlers = "CameraDestroyerHandler", "CameraMover", "ToggleAimAssist", "SelectionCycler", "AimAssistHandler"
 }
 
 DoomEdNums
 {
     16000 = Cylinder
+	16001 = Swi
+	16002 = MyCell
+	16003 = MyPlasmaPistol
 }
 
 //-------------------------------------------------------------------------------------------
@@ -93,5 +96,9 @@ Skill nightmare
 Map "MAP01" "$TXT_MAP01"
 {
 	LightMode = 3
-	Sky1 = "textures/sky1.png"
+	Next = "MAP02"
+}
+Map "MAP02" "$TXT_MAP02"
+{
+	LightMode = 3
 }

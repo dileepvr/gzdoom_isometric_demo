@@ -1,7 +1,7 @@
 BUILDDIR=build
 ZIP=zip
 ZIPFLAGS=-r -FS
-ZIPEXCLUDES=-x '**~' 'build/*' '.*' 'makefile'
+ZIPEXCLUDES=-x '**~' 'build/*' '.*' 'makefile' '**.dbs' '**.backup*' '**.bak' '**.autosave*'
 ZIPTARGET=$(BUILDDIR)/$(notdir $(CURDIR)).ipk3
 
 TARGETS=$(BUILDDIR) $(ZIPTARGET)
@@ -17,5 +17,5 @@ debug:
 $(BUILDDIR):
 	mkdir $(BUILDDIR)
 
-$(ZIPTARGET) : *.* */*.lmp */*.png */*/*.png maps/*.wad *.zc */*/*.zc | $(BUILDDIR)
+$(ZIPTARGET) : *.* */*.obj */*.lmp */*.png */*.wav */*/*.png maps/*.wad *.zc */*/*.zc | $(BUILDDIR)
 	$(ZIP) $(ZIPFLAGS) $(ZIPTARGET) * $(ZIPEXCLUDES)

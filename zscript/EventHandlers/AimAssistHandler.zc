@@ -1,0 +1,174 @@
+class AimAssistHandler : StaticEventHandler
+{
+	// copying RicardoLuis0's Aim Assist Mod v0.8
+	// https://forum.zdoom.org/viewtopic.php?t=62895
+	cvar aimassists[MAXPLAYERS]; // They say that GetCVar() inside WorldTick() is slow?
+	cvar max_dists[MAXPLAYERS];
+	cvar lookingup[MAXPLAYERS];
+	cvar lookingdown[MAXPLAYERS];
+	Actor actorhit[MAXPLAYERS];
+
+	override void WorldLoaded (WorldEvent e)
+	{
+		for (int i = 0; i < MAXPLAYERS; i++)
+		{
+			if (PlayerInGame[i] && players[i].mo)
+			{
+				// Define these User CVars in the cvarinfo lump
+				aimassists[i] = CVar.GetCVar("IsoAimAssist", players[i]);
+				max_dists[i] = CVar.GetCVar("IsoAimAssistMaxDist", players[i]);
+				lookingup[i] = CVar.GetCVar("IsoLookingUp", players[i]);
+				lookingdown[i] = CVar.GetCVar("IsoLookingDown", players[i]);
+
+				actorhit[i] = null;
+			}
+		}
+	}
+
+	// do linetrace and get results
+	play Actor,double,Vector3 doTrace(PlayerPawn a,double i_angle,double i_rotation,Actor closest,double closest_distance, double max_dist){
+		FLineTraceData t;
+		Vector3 hitloc=(0,0,0);
+		//do a linetrace around i_a and i_r in a circle
+		if(a.LineTrace(a.angle+(sin(i_rotation)*i_angle),			//trace angle
+							max_dist,							//trace max distance
+							a.pitch+(cos(i_rotation)*i_angle*8),		//trace pitch (modified by factor 8)
+							TRF_NOSKY,								//trace flags
+							a.viewheight*a.player.crouchfactor,		//trace height
+							data:t									//output struct
+		)){
+			if(t.hitType==TRACE_HitActor){//if hit is an actor
+				
+				if(t.hitActor.bSHOOTABLE&&!t.hitActor.bFRIENDLY&&!t.hitActor.bCORPSE){//if hit is a monster and not friendly
+					if(!closest||a.Distance3D(t.HitActor)>closest_distance){//if it's closer than last hit
+						//change this as new closest
+						closest=t.HitActor;
+						closest_distance=a.Distance3D(t.HitActor);
+						hitloc=t.HitLocation;
+					}
+				}
+			}
+		}
+		return closest,closest_distance,hitloc;
+	}
+
+	//get angle and delta from two positions
+	static vector3, double, double lookAt(Vector3 pos1, Vector3 pos2){
+		//calculate difference between pos1 and pos2 (level.Vec3Diff takes portals into account)
+		
+		Vector3 delta=level.Vec3Diff(pos1, pos2);
+		
+		//calculate angle and pitch to other actor
+		double target_angle = atan2(delta.y, delta.x);
+		double target_pitch = -asin(delta.z/delta.length());
+
+		return delta, target_angle, target_pitch;
+	}
+
+	//main method, does all work
+	bool doAim(int pnum)
+	{
+		PlayerPawn pawn = players[pnum].mo;
+		Actor closest = null;
+		Actor hit = null;
+		Vector3 hitloc = (0, 0, 0);
+		cvar aimassist = aimassists[pnum];
+		float max_dist = max_dists[pnum].GetFloat();
+		float closest_distance = max_dist + 1;
+		
+		//check straight ahead
+		[closest, closest_distance, hitloc] = doTrace(pawn, 0, 0, closest, closest_distance, max_dist);
+
+		// Convert these to CVars?
+		double precision = 0.5;
+		double radial_precision = 8;
+		double max_angle = 8;
+
+		//check in a circle around the direction player's looking
+		for(double i_a = 0; i_a <= max_angle; i_a += precision) {
+			for(double i_r = 0; i_r <= 360 && !closest; i_r += radial_precision) {
+			  [closest, closest_distance, hitloc] = doTrace(pawn, i_a, i_r, closest, closest_distance, max_dist);
+			}
+		}
+
+		//if there was an enemy found
+		if(closest){
+		  actorhit[pnum] = closest;
+		  float pheight = pawn.viewheight*pawn.player.crouchfactor;
+		  Vector3 aimheight=(0, 0, closest.height);
+		  Vector3 delta;
+		  double target_angle,target_pitch;
+		  Vector3 view=pawn.pos + (0, 0, pheight);
+		  //get target angle and pitch
+		  [delta, target_angle, target_pitch] = lookAt(view, closest.pos + aimheight);
+			
+		  //check if view is obstructed
+		  FLineTraceData t;
+		  pawn.LineTrace(target_angle, max_dist, target_pitch,
+				 TRF_NOSKY, pawn.viewheight*pawn.player.crouchfactor, data:t);
+		  //aim correction
+		  if((t.hitType != TRACE_HitActor) || (t.hitActor != closest)){
+		    //try to aim at correct z
+		    [delta, target_angle, target_pitch] = lookAt(view, (hitloc.x, hitloc.y, closest.pos.z + aimheight.z));
+		    pawn.LineTrace(target_angle, max_dist, target_pitch, TRF_NOSKY, pawn.viewheight * pawn.player.crouchfactor, data:t);
+		  }
+		  if((t.hitType != TRACE_HitActor) || (t.hitActor != closest)){
+		    //try to aim at correct xy
+		    [delta, target_angle, target_pitch] = lookAt(view, (closest.pos.x, closest.pos.y, hitloc.z));
+		    pawn.LineTrace(target_angle, max_dist, target_pitch, TRF_NOSKY, pawn.viewheight * pawn.player.crouchfactor, data:t);
+		  }
+		  /* if((t.hitType != TRACE_HitActor) || (t.hitActor != closest)){ */
+		  /*   // target closest */
+		  /*   [delta, target_angle, target_pitch] = lookAt(view, hitloc); */
+		  /* } */
+		  if((t.hitType != TRACE_HitActor) || (t.hitActor != closest)){
+		    // Stop aiming
+			actorhit[pnum] = null;
+		    return false;
+		  }
+
+		  //get angle difference
+		  double angle_diff = pawn.DeltaAngle(pawn.angle, target_angle);
+		  double pitch_diff = pawn.DeltaAngle(pawn.pitch, target_pitch);
+
+		  double rot_speed = 1;
+		  if (aimassist.GetBool())
+		  {
+		    //check rotation speed
+		    if(abs(angle_diff) > rot_speed){
+		      //if rotation speed is lower than difference, add/subtract rotation speed
+		      pawn.A_SetAngle(pawn.angle + (angle_diff > 0 ? rot_speed : -rot_speed), SPF_INTERPOLATE);
+		    } else {
+		      //if rotation speed is higher than differece, set to target angle
+		      pawn.A_SetAngle(target_angle, SPF_INTERPOLATE);
+		    }
+		  }
+		  
+		  if(abs(pitch_diff) > rot_speed){
+		    //if rotation speed is lower than difference, add/subtract rotation speed
+		    pawn.A_SetPitch(pawn.pitch + (pitch_diff > 0 ? rot_speed : -rot_speed), SPF_INTERPOLATE);
+		  } else {
+		    //if rotation speed is higher than differece, set to target pitch
+		    pawn.A_SetPitch(target_pitch, SPF_INTERPOLATE);
+		  }		  
+		  return true;
+		} else {
+		  actorhit[pnum] = null;
+		  return false;
+		}
+	}
+
+	override void WorldTick()
+	{
+	  for (int i = 0; i < MAXPLAYERS; i++)
+	  {
+	    if (PlayerInGame[i] && players[i].mo)
+	    {
+			if (lookingup[i].GetBool()) players[i].mo.A_SetPitch(-45);
+			else if (lookingdown[i].GetBool()) players[i].mo.A_SetPitch(45);
+			else if (!doAim(i)) players[i].mo.A_SetPitch(0);
+	    }
+	  }
+	}
+
+}

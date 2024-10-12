@@ -1,0 +1,4 @@
+User Bool IsoAimAssist = false;
+User Float IsoAimAssistMaxDist = 1000.0;
+User Bool IsoLookingUp = false;
+User Bool IsoLookingDown = false;

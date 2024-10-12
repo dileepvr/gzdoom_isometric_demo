@@ -1,20 +1,42 @@
 class CameraDestroyerHandler : StaticEventHandler
 {
-        override void PlayerDisconnected (PlayerEvent e)
+	override void PlayerDisconnected (PlayerEvent e)
 	{
-	  // This is needed if a player disconnects from a multiplayer session
-	  if(players[e.PlayerNumber].camera) players[e.PlayerNumber].camera.destroy();
+		// This is needed if a player disconnects from a multiplayer session
+		if (players[e.PlayerNumber].camera && players[e.PlayerNumber].camera.GetClassName() == 'SpectatorCamera') players[e.PlayerNumber].camera.destroy();
 	}
 	override void WorldLoaded (WorldEvent e) 
 	{
-		if(e.IsSaveGame)
+		// Handle loading a saved game
+		if (e.IsSaveGame)
 		{
 			for (int i = 0; i < MAXPLAYERS; i++)
 			{
 				if (PlayerInGame[i] && players[i].mo)
+				{					
+					if (MyStandaloneGamePlayer(players[i].mo).ppawn_isocamera)
+					{
+						MyStandaloneGamePlayer pmo = MyStandaloneGamePlayer(players[i].mo);
+						players[i].camera = MyStandaloneGamePlayer(players[i].mo).ppawn_isocamera;
+						SpectatorCamera(players[i].camera).Init(pmo.ppawn_isodist, pmo.ppawn_isoyaw, pmo.ppawn_isopitch, pmo.ppawn_camflags);
+					}
+				}
+			}
+		}
+	}
+	// destroy the camera when this level is unloaded
+	// in the case of hub levels, we don't want to spawn extra cameras
+	// when the player returns to this level
+	override void WorldUnloaded(WorldEvent e)
+	{
+		for (int i = 0; i < MAXPLAYERS; i++)
+		{
+			if (PlayerInGame[i] && players[i].mo)
+			{
+				if (players[i].camera && players[i].camera.GetClassName() == 'SpectatorCamera')
 				{
-					MyStandaloneGamePlayer pmo = MyStandaloneGamePlayer(players[i].mo);
-					SpectatorCamera(players[i].camera).Init(pmo.ppawn_isodist, pmo.ppawn_isoyaw, pmo.ppawn_isopitch, pmo.ppawn_camflags);
+					players[i].camera.Destroy();
+					players[i].mo.A_SetBlend("00 00 00", 1.0, 35); // Blank screen so first-person view isn't momentarily seen
 				}
 			}
 		}

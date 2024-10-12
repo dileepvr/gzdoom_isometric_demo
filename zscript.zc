@@ -1,6 +1,8 @@
-version "4.12.0"
+version "4.13"
 
 #include "zscript/MyStandaloneGamePlayer/MyStandaloneGamePlayer.zc"
 #include "zscript/MyStandaloneGameHUD/MyStandaloneGameHUD.zc"
 #include "zscript/CustomActors/CustomActors.zc"
 #include "zscript/EventHandlers/CameraDestroyer.zc"
+#include "zscript/EventHandlers/CustomInputKeys.zc"
+#include "zscript/EventHandlers/AimAssistHandler.zc"

@@ -1,5 +1,7 @@
 **~
 build/*
 **.backup*
+**.autosave*
 **SAVE*
 **.dbs
+**.bak

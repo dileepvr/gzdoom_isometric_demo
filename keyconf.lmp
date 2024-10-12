@@ -1,8 +1,28 @@
 addkeysection "Isometric Camera View Control" "Isometric Camera Control"
 
-addmenukey "Rotate Left" +user1
-addmenukey "Rotate Right" +user2
-addmenukey "Center Camera" +user3
-defaultbind Q +user1
-defaultbind E +user2
-defaultbind Z +user3
+addmenukey "Rotate Left" "rotate_cam_left"
+alias "rotate_cam_left" ""
+addmenukey "Rotate Right" "rotate_cam_right"
+alias "rotate_cam_right" ""
+addmenukey "Center Camera" "center_cam"
+alias "center_cam" ""
+defaultbind Q "rotate_cam_left"
+defaultbind E "rotate_cam_right"
+defaultbind Z "center_cam"
+
+addkeysection "Item/Switch Selection" "Item/Switch Selection"
+
+addmenukey "Cycle Select Switches/Objects" "cycle_select"
+alias "cycle_select" ""
+defaultbind F "cycle_select"
+addmenukey "Use Selected Switches/Objects" "use_selected"
+alias "use_selected" ""
+defaultbind G "use_selected"
+addmenukey "Clear Selection" "clear_select"
+alias "clear_select" ""
+defaultbind X "clear_select"
+
+addkeysection "Other QoL" "Other QoL"
+addmenukey "Toggle Aim Assist" "iso_aim_assist"
+alias "iso_aim_assist" ""
+defaultbind C "iso_aim_assist"

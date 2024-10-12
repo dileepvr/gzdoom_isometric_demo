@@ -1,0 +1,8 @@
+Model mycell
+{
+	Path "models"
+	Model 0 "mycell.obj"
+	Scale 15.0 15.0 15.0
+	Offset 0.0 0.0 0.0
+	FrameIndex MDLS A 0 0 // dummy sprite for frame
+}

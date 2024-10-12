@@ -1,15 +1,18 @@
 class MyStandaloneGamePlayer : PlayerPawn
 {
-  int diffangle, face_cam_mult;
-  bool isocam_keypressed;
-  double ppawn_isoyaw, ppawn_isodist, ppawn_isopitch;
-  static const double camyaw[] = {180, 225, 270, 315, 0, 45, 90, 135}; // degrees
-  int ppawn_isoviewpoint, ppawn_camflags;
-  bool fancy_screen_rotate, isocam_changing;
+	// Camera variables
+	int diffangle, face_cam_mult;
+	bool isocam_keypressed;
+	double ppawn_isoyaw, ppawn_isodist, ppawn_isopitch;
+	static const double camyaw[] = {180, 225, 270, 315, 0, 45, 90, 135}; // degrees
+	int ppawn_isoviewpoint, ppawn_camflags;
+	bool fancy_screen_rotate, isocam_changing;
+	Actor ppawn_isocamera;
 
-  property ppawn_isoyaw : ppawn_isoyaw;
-  property ppawn_isodist : ppawn_isodist;
-  property ppawn_isopitch : ppawn_isopitch;
+	property ppawn_isoyaw : ppawn_isoyaw;
+	property ppawn_isodist : ppawn_isodist;
+	property ppawn_isopitch : ppawn_isopitch;
+	property ppawn_isocamera : ppawn_isocamera;
 
 	Default
 	{
@@ -22,56 +25,65 @@ class MyStandaloneGamePlayer : PlayerPawn
 		Player.DisplayName "BaldGuy";
 		Player.CrouchSprite "PLYC";
 		Player.ViewHeight 60;
-		Player.ColorRange 144, 189;
-		Player.Colorset 0, "$TXT_COLOR_GREEN", 144, 191, 144;
-		Player.Colorset 1, "$TXT_COLOR_RED", 96, 143, 96;
-		Player.Colorset 2, "$TXT_COLOR_BLUE", 192, 239, 192;
+		Player.ViewBob 0;
+		Player.FlyBob 0;
+		// Player.StartItem "MyPlasmaPistol";
+		// Player.StartItem "MyCell", 5;
+		Player.StartItem "MyFist";
+		Player.WeaponSlot 1, "MyFist";
+		Player.WeaponSlot 2, "MyPlasmaPistol";
 		MyStandaloneGamePlayer.ppawn_isoyaw 225;
 		MyStandaloneGamePlayer.ppawn_isodist 300;
 		MyStandaloneGamePlayer.ppawn_isopitch 30;
 		+ISOMETRICSPRITES
+		-PICKUP // Don't auto-pickup things by walking over them
+	}
+
+	void SetupIsometricCamera()
+	{
+		
+		if(player.camera == player.mo || (player.camera && player.camera.GetClassName() != 'SpectatorCamera')) // Setup isometric camera
+	    {
+			player.camera = SpectatorCamera(Actor.Spawn("SpectatorCamera", pos));
+			player.camera.player = player; // Necessary for pain and pickup screen flashes. Adds viewbob too.
+			ppawn_isocamera = player.camera; // Store pointer, in case you lose it
+			player.camera.tracer = player.mo; // Do you want the camera to follow any actor? Set it as tracer here.
+	    }
+		SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, ppawn_camflags);
+		// SpectatorCamera(player.camera).lagdistance = 150.0; // Use for a lazy camera that only follows if you get away from center
+		// SpectatorCamera(player.camera).chasemode = 2; // 0: chase until tracer centered, 1: same but only when tracer is moving, 2: stop chase if tracer within lagdistance
 	}
 
 	override void PostBeginPlay()
 	{
-	  Super.PostBeginPlay();
-	  face_cam_mult = 1; fancy_screen_rotate = true; isocam_changing = false; ppawn_isoviewpoint = 1;
-	  ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ORTHOGRAPHIC;
-	  isocam_keypressed = false;	  
-	  if(player.camera == player.mo) // Setup isometric camera
-	    {
-	      player.camera = SpectatorCamera(Actor.Spawn("SpectatorCamera", pos));
-	      player.camera.tracer = player.mo; // Do you want the camera to follow any actor? Set it as tracer here.
-	      SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, ppawn_camflags);
-	      // SpectatorCamera(player.camera).lagdistance = 150.0; // Use for a lazy camera that only follows if you get away from center
-	      // SpectatorCamera(player.camera).chasemode = 2; // 0: chase until tracer centered, 1: same but only when tracer is moving, 2: stop chase if tracer within lagdistance
-	    }
-	  player.camera.A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees!", 10, "BIGUPPER");
+		Super.PostBeginPlay();
+		face_cam_mult = 1; fancy_screen_rotate = true; isocam_changing = false; ppawn_isoviewpoint = 1;
+		ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ORTHOGRAPHIC;
+		isocam_keypressed = false;	  
+		SetupIsometricCamera();
+		if (level.MapName == "MAP01")
+		{
+			player.camera.A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees.\n\n\nUse 'F' when stationary to select objects\n\nand 'G' to interact with them.", 10, "BIGUPPER");
+		}
+	}
+
+	void rotate_camera(int viewchange)
+	{
+	    isocam_changing = true;
+	    ppawn_isoviewpoint += viewchange;
+	    if(ppawn_isoviewpoint < 0) ppawn_isoviewpoint = 7;
 	}
 
 	override void Tick()
 	{	  
-
-	  // Handle Camera movement
-	  if((player.cmd.buttons & BT_USER3) && (player.camera.tracer != NULL)) {
-	    // Center camera (useful if lagdistance > 0)
-	    player.camera.SetOrigin(player.camera.tracer.pos, true);
-	  }
-	  if(player.cmd.buttons & BT_USER1 && !isocam_keypressed) {
-	    isocam_changing = true;
-	    ppawn_isoviewpoint -= 2;
-	    if(ppawn_isoviewpoint < 0) ppawn_isoviewpoint = 7;
-	  }
-	  if(player.cmd.buttons & BT_USER2 && !isocam_keypressed) {
-	    isocam_changing = true;
-	    ppawn_isoviewpoint += 2;
-	  }
-	  if(player.cmd.buttons & (BT_USER1 | BT_USER2)) isocam_keypressed = true;
-
-	  if(level.time % 20 == 0 && isocam_keypressed) { // Once every 20/35th of a second
-	    isocam_keypressed = false;
-	  }
-
+	   if (player.camera == player.mo)
+	   {
+		   // If some other level camera takes over player.camera for a scripted sequence and returns the pointer to player.mo
+		   if (ppawn_isocamera) player.camera = ppawn_isocamera;
+		   SetupIsometricCamera();
+		   
+	   }
+	  // Handle Camera movement (Input is is being done by the CameraRotator EventHandler)
 	  if(isocam_changing) {
 	    if(fancy_screen_rotate) { // Fancy screen rotation
 	      float angdiff = 0.125*(camyaw[ppawn_isoviewpoint % 8] - ppawn_isoyaw);
@@ -82,7 +94,8 @@ class MyStandaloneGamePlayer : PlayerPawn
 		  ppawn_isoyaw += (int)(angdiff);
 		else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
 	      } else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
-	    } else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8];
+	    }
+		else ppawn_isoyaw = camyaw[ppawn_isoviewpoint % 8]; // No fancy screen rotation
 
 	    SpectatorCamera(player.camera).Init(ppawn_isodist, ppawn_isoyaw, ppawn_isopitch, -1);
 	    if(ppawn_isoyaw == camyaw[ppawn_isoviewpoint % 8]) isocam_changing = false;
@@ -107,7 +120,7 @@ class MyStandaloneGamePlayer : PlayerPawn
 	{
 	  UserCmd cmd = player.cmd;
 	  let player = self.player;
-	  A_SetPitch(0); // Cancel pitch modification here
+	  // A_SetPitch(0); // Cancelling pitch modification happens in VerticalAimer EventHandler
 	  if(cmd.sidemove) cmd.sidemove *= face_cam_mult;
 
 	  cmd.yaw -= GetPlayerInput(INPUT_YAW); // Cancel default mouse-turn first
@@ -126,7 +139,9 @@ class MyStandaloneGamePlayer : PlayerPawn
 		PLAY A -1;
 		Loop;
 	See:
-		PLAY ABCD 4;
+		PLAY ABC 4;
+		PLAY D 1 A_StartSound("body/foot1", CHAN_BODY);
+		PLAY D 3;
 		Loop;
 	Missile:
 		PLAY A 12;
