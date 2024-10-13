@@ -3,6 +3,7 @@ class AimAssistHandler : StaticEventHandler
 	// copying RicardoLuis0's Aim Assist Mod v0.8
 	// https://forum.zdoom.org/viewtopic.php?t=62895
 	cvar aimassists[MAXPLAYERS]; // They say that GetCVar() inside WorldTick() is slow?
+	cvar aimmonstersonly[MAXPLAYERS];
 	cvar max_dists[MAXPLAYERS];
 	cvar lookingup[MAXPLAYERS];
 	cvar lookingdown[MAXPLAYERS];
@@ -16,6 +17,7 @@ class AimAssistHandler : StaticEventHandler
 			{
 				// Define these User CVars in the cvarinfo lump
 				aimassists[i] = CVar.GetCVar("IsoAimAssist", players[i]);
+				aimmonstersonly[i] = CVar.GetCVar("IsoAimMonstersOnly", players[i]);
 				max_dists[i] = CVar.GetCVar("IsoAimAssistMaxDist", players[i]);
 				lookingup[i] = CVar.GetCVar("IsoLookingUp", players[i]);
 				lookingdown[i] = CVar.GetCVar("IsoLookingDown", players[i]);
@@ -26,7 +28,7 @@ class AimAssistHandler : StaticEventHandler
 	}
 
 	// do linetrace and get results
-	play Actor,double,Vector3 doTrace(PlayerPawn a,double i_angle,double i_rotation,Actor closest,double closest_distance, double max_dist){
+	play Actor,double,Vector3 doTrace(PlayerPawn a,double i_angle,double i_rotation,Actor closest,double closest_distance, double max_dist, bool monstersonly){
 		FLineTraceData t;
 		Vector3 hitloc=(0,0,0);
 		//do a linetrace around i_a and i_r in a circle
@@ -38,8 +40,8 @@ class AimAssistHandler : StaticEventHandler
 							data:t									//output struct
 		)){
 			if(t.hitType==TRACE_HitActor){//if hit is an actor
-				
-				if(t.hitActor.bSHOOTABLE&&!t.hitActor.bFRIENDLY&&!t.hitActor.bCORPSE){//if hit is a monster and not friendly
+				bool flagcheck = (monstersonly ? t.hitActor.bISMONSTER : t.hitActor.bSHOOTABLE);
+				if(flagcheck&&!t.hitActor.bFRIENDLY&&!t.hitActor.bCORPSE){//if hit is a monster and not friendly
 					if(!closest||a.Distance3D(t.HitActor)>closest_distance){//if it's closer than last hit
 						//change this as new closest
 						closest=t.HitActor;
@@ -77,7 +79,7 @@ class AimAssistHandler : StaticEventHandler
 		float closest_distance = max_dist + 1;
 		
 		//check straight ahead
-		[closest, closest_distance, hitloc] = doTrace(pawn, 0, 0, closest, closest_distance, max_dist);
+		[closest, closest_distance, hitloc] = doTrace(pawn, 0, 0, closest, closest_distance, max_dist, aimmonstersonly[pnum].GetBool());
 
 		// Convert these to CVars?
 		double precision = 0.5;
@@ -87,7 +89,7 @@ class AimAssistHandler : StaticEventHandler
 		//check in a circle around the direction player's looking
 		for(double i_a = 0; i_a <= max_angle; i_a += precision) {
 			for(double i_r = 0; i_r <= 360 && !closest; i_r += radial_precision) {
-			  [closest, closest_distance, hitloc] = doTrace(pawn, i_a, i_r, closest, closest_distance, max_dist);
+			  [closest, closest_distance, hitloc] = doTrace(pawn, i_a, i_r, closest, closest_distance, max_dist, aimmonstersonly[pnum].GetBool());
 			}
 		}
 

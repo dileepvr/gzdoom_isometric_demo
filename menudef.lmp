@@ -38,9 +38,23 @@ AddOptionMenu "OptionsMenu"
 
 OptionMenu "IsoModOptions"
 {
-    Title "Isometric Mode Options (Hardware Renderers only)"	
+    Title "Isometric Mode Options (Hardware Renderers only)"
     Option "Isometric Fog of War", "r_radarclipper", "OnOff"
     Option "Visibility Through Level Geometry", "r_dithertransparency", "OnOff"
+	Control "Toggle Aim Assist", "iso_aim_assist"
+	Option "Aim Assist Monsters Only", "IsoAimMonstersOnly", "OnOff"
+	Slider "Aim Assist Max. Distance", IsoAimAssistMaxDist, 100, 5000, 100
+
+    StaticText ""
+    StaticText "Viewpoint Rotation Control"
+    Control "Rotate Left", "rotate_cam_left"
+    Control "Rotate Right", "rotate_cam_right"
+    Control "Center Camera", "center_cam"
+    StaticText ""
+    StaticText "Other Quality of Life Controls"
+	Control "Cycle Select Switches/Objects", "cycle_select"
+	Control "Use Selected Switches/Objects", "use_selected"
+	Control "Clear Selection", "clear_select"
 }
 
 //-------------------------------------------------------------------------------------------
