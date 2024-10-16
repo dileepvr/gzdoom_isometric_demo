@@ -66,7 +66,7 @@ class MyStandaloneGameHUD : BaseStatusBar
 		  hitcos = 0; hitsin = 0;
 		  xscale = 0.375*( screenblocks >= 10 ? Screen.GetWidth() : 0.1*screenblocks*Screen.GetWidth() );
 		  myfov = (CPlayer.camera.player ? CPlayer.camera.player.FOV : CPlayer.camera.CameraFOV);
-		  xscale *= 1.0/tan(clamp(myfov, 5.0, 179.0) * 0.5);
+		  xscale *= 1.0/tan(clamp(myfov, 5.0, 170.0) * 0.5);
 		  aspratio = (1.0 * Screen.GetWidth()) / (1.0 * Screen.GetHeight());
 		  if (aspratio > 1.0) xscale *= 1.777778/aspratio;
 		  selstruct mypsel = SelectionCycler(EventHandler.Find("SelectionCycler")).psels[consoleplayer];
