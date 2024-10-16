@@ -4,7 +4,7 @@ class MyStandaloneGameHUD : BaseStatusBar
 	MyStandaloneGamePlayer pmo;
 	double isoyaw, playeryaw, diffangle;
 	int cosine, sine, selcos, selsin, hitcos, hitsin, cursordist;
-	float xscale, yscale, aspratio;
+	float xscale, yscale, aspratio, myfov;
 	bool isosel;
 	cvar isoaim;
 	Actor actorhit;
@@ -19,6 +19,7 @@ class MyStandaloneGameHUD : BaseStatusBar
 	  cosine = 0; sine = 0;
 	  selcos = 0; selsin = 0;
 	  hitcos = 0; hitsin = 0;
+	  myfov = 90.0; // degrees
 	  isosel = false;
 	  actorhit = null;
 
@@ -64,6 +65,8 @@ class MyStandaloneGameHUD : BaseStatusBar
 		  selcos = 0; selsin = 0;
 		  hitcos = 0; hitsin = 0;
 		  xscale = 0.375*( screenblocks >= 10 ? Screen.GetWidth() : 0.1*screenblocks*Screen.GetWidth() );
+		  myfov = (CPlayer.camera.player ? CPlayer.camera.player.FOV : CPlayer.camera.CameraFOV);
+		  xscale *= 1.0/tan(clamp(myfov, 5.0, 179.0) * 0.5);
 		  aspratio = (1.0 * Screen.GetWidth()) / (1.0 * Screen.GetHeight());
 		  if (aspratio > 1.0) xscale *= 1.777778/aspratio;
 		  selstruct mypsel = SelectionCycler(EventHandler.Find("SelectionCycler")).psels[consoleplayer];
