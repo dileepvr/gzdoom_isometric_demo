@@ -117,3 +117,16 @@ Texture EXSWS1, 256, 128
    Patch "textures/nash_wall.png", 0, 0
    Patch "textures/SW2S1.png", 112, 48
 }
+
+Texture NASHWAL1, 256, 128
+{
+	Patch "textures/nash_wall.png", 0, 0
+}
+Flat NASHFLR1, 64, 64
+{
+	Patch "flats/nash_floor.png", 0, 0
+}
+Flat NASHCEI1, 64, 64
+{
+	Patch "flats/nash_ceiling.png", 0, 0
+}
