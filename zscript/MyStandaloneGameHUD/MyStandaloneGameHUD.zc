@@ -57,7 +57,7 @@ class MyStandaloneGameHUD : BaseStatusBar
 	    isoyaw = MyStandaloneGamePlayer(CPlayer.mo).ppawn_isoyaw;
 	    playeryaw = CPlayer.mo.angle; // Why doesn't pmo.angle work?
 	  }
-	  if (!automapactive && (gamestate == GS_LEVEL))
+	  if (!automapactive && (gamestate == GS_LEVEL) && CPlayer && CPlayer.camera)
 	  {
 		  diffangle = pmo.deltaangle(playeryaw, isoyaw);
 		  cosine = (int)(-0.5*cursordist*Cos(diffangle));
