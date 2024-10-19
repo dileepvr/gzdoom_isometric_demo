@@ -8,6 +8,8 @@ class MyStandaloneGamePlayer : PlayerPawn
 	int ppawn_isoviewpoint, ppawn_camflags;
 	bool fancy_screen_rotate, isocam_changing;
 	Actor ppawn_isocamera;
+	int ctrltype;
+	cvar isoctrltype;
 
 	property ppawn_isoyaw : ppawn_isoyaw;
 	property ppawn_isodist : ppawn_isodist;
@@ -61,6 +63,7 @@ class MyStandaloneGamePlayer : PlayerPawn
 		ppawn_camflags = VPSF_ABSOLUTEOFFSET | VPSF_ALLOWOUTOFBOUNDS | VPSF_ORTHOGRAPHIC;
 		isocam_keypressed = false;	  
 		SetupIsometricCamera();
+		isoctrltype = CVar.GetCVar("IsoControlType", self.player);
 		if (level.MapName == "MAP01")
 		{
 			player.camera.A_Print("Use 'Q' and 'E' to Rotate Camera View by 90 degrees.\n\n\nUse 'F' when stationary to select objects\n\nand 'G' to interact with them.", 10, "BIGUPPER");
@@ -120,16 +123,66 @@ class MyStandaloneGamePlayer : PlayerPawn
 	{
 	  UserCmd cmd = player.cmd;
 	  let player = self.player;
+	  // diffangle = deltaangle(angle, (player && player.camera) ? player.camera.angle : 0); // already happening in Tick()
+	  // face_cam_mult = 1; // already happening in Tick()
+	  // if (abs(diffangle) > 90) face_cam_mult = -1; // already happening in Tick()
 	  // A_SetPitch(0); // Cancelling pitch modification happens in VerticalAimer EventHandler
-	  if(cmd.sidemove) cmd.sidemove *= face_cam_mult;
 
 	  cmd.yaw -= GetPlayerInput(INPUT_YAW); // Cancel default mouse-turn first
 	  
-	  if(diffangle > 45 && diffangle < 135) cmd.yaw += 3*GetPlayerInput(INPUT_PITCH);
-	  else if(diffangle > -135 && diffangle < -45) cmd.yaw -= 3*GetPlayerInput(INPUT_PITCH);
+	  if(diffangle >= 0) cmd.yaw += GetPlayerInput(INPUT_PITCH);
+	  else if(diffangle < 0) cmd.yaw -= GetPlayerInput(INPUT_PITCH);
 
-	  if(abs(diffangle) < 80 || abs(diffangle) > 100) cmd.yaw += face_cam_mult*GetPlayerInput(INPUT_YAW);
-		
+	  if(diffangle > 45 && diffangle < 135) cmd.yaw += 2*GetPlayerInput(INPUT_PITCH);
+	  else if(diffangle > -135 && diffangle < -45) cmd.yaw -= 2*GetPlayerInput(INPUT_PITCH);
+
+	  if(abs(diffangle) < 80 || abs(diffangle) > 100) cmd.yaw += 2*face_cam_mult*GetPlayerInput(INPUT_YAW);
+
+	  ctrltype = isoctrltype.GetInt();
+	  if (ctrltype == 0)
+	  {
+		  if(cmd.sidemove) cmd.sidemove *= face_cam_mult;
+	  }
+	  else // if (ctrltype == 1) // movement directions relative to camera
+	  {
+		  int smove = cmd.sidemove;
+		  int fmove = cmd.forwardmove;
+		  if(diffangle > 45+22.5 && diffangle < 135-22.5) // facing towards right of screen
+		  {
+			  cmd.sidemove = -fmove;
+			  cmd.forwardmove = smove;
+		  }
+		  else if(diffangle > -135+22.5 && diffangle < -45-22.5) // facing towards left of screen
+		  {
+			  cmd.sidemove = fmove;
+			  cmd.forwardmove = -smove;
+		  }
+		  else if(diffangle > 22.5 && diffangle < 45+22.5) // NW
+		  {
+			  cmd.sidemove = (int)(0.707*(smove-fmove));
+			  cmd.forwardmove = (int)(0.707*(smove+fmove));
+		  }
+		  else if(diffangle < -22.5 && diffangle > -45-22.5) // NE
+		  {
+			  cmd.sidemove = (int)(0.707*(smove+fmove));
+			  cmd.forwardmove = (int)(0.707*(-smove+fmove));
+		  }
+		  else if(diffangle > 135-22.5 && diffangle < 135+22.5) // SW
+		  {
+			  cmd.sidemove = (int)(0.707*(-smove-fmove));
+			  cmd.forwardmove = (int)(0.707*(smove-fmove));
+		  }
+		  else if(diffangle < -135+22.5 && diffangle > -135-22.5) // SE
+		  {
+			  cmd.sidemove = (int)(0.707*(-smove+fmove));
+			  cmd.forwardmove = (int)(0.707*(-smove-fmove));
+		  }
+		  else
+		  {
+			  cmd.sidemove *= face_cam_mult;
+			  cmd.forwardmove *= face_cam_mult;
+		  }
+	  }
 	  Super.MovePlayer();
 	}
 	
