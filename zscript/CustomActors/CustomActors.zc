@@ -48,7 +48,9 @@ Class Cylinder : actor
 	MISL C 1 Bright
 		{
 			bSOLID = false;
-			Spawn ('CylCorpse', Pos, ALLOW_REPLACE);
+			let mycorpse = Spawn ('CylCorpse', Pos, ALLOW_REPLACE);
+			mycorpse.Vel = Vel; // Not sure if this does anything because statnum and nointeraction (it might clip through walls)
+			mycorpse.Mass = Mass*0.2; // Not sure if this does anything because statnum and nointeraction (it might clip through walls)
 		}
 	MISL D 10 Bright;
 	Stop;
@@ -72,9 +74,11 @@ Class CylCorpse : actor
   override void BeginPlay()
   {
 	  Super.BeginPlay();
-	  ChangeStatNum(Thinker.STAT_FIRST_THINKING - 1); // For performance
+	  ChangeStatNum(Thinker.STAT_FIRST_THINKING - 1); // For performance (dangerous code)
 	  // For things spawned after play begins that don't need to interact or animate
 	  // If +SOLID flag enabled, it will still collide with geometry
+	  // Sprite won't show if object was already on map
+	  // Use an eventhandler to set sprite on second worldtick
   }
  
   States
