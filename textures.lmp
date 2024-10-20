@@ -7,6 +7,15 @@ Sprite CYL1A0, 39, 52
 	offset 20, 56
 }
 
+// CylCorpse (Cylinder Corpse)
+Sprite CYC1A0, 49, 51
+{
+	XScale 1.25 // This is weirdly inverse
+	YScale 1.25 // This is weirdly inverse
+	Patch "sprites/cyl_corpse.png", 0, 0
+	offset 25, 57
+}
+
 // Swi (TechLamp)	
 Sprite TLMPA0, 23, 80
 {

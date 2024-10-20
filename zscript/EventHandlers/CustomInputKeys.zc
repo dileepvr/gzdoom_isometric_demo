@@ -487,7 +487,7 @@ class SelectionCycler : EventHandler
 		{
 			if (PlayerInGame[i] && players[i].mo && psels[i].isosel)
 			{
-				if ((players[i].mo.Vel.X != 0) || (players[i].mo.Vel.Y != 0))
+				if (players[i].mo.Vel.XY.Length() > 1.0) //(players[i].mo.Vel.X != 0) || (players[i].mo.Vel.Y != 0))
 				{
 					psels[i].isosel = false;
 				}

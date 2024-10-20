@@ -44,9 +44,44 @@ Class Cylinder : actor
 			A_StartSound("weapons/rocklx", CHAN_BODY);
 			bFORCEXYBILLBOARD = true;
 		}
-	MISL C 10 Bright;// A_Explode; // this hurts things close by
+	MISL C 9 Bright;// A_Explode; // this hurts things close by
+	MISL C 1 Bright
+		{
+			bSOLID = false;
+			Spawn ('CylCorpse', Pos, ALLOW_REPLACE);
+		}
 	MISL D 10 Bright;
 	Stop;
+  }
+}
+
+Class CylCorpse : actor
+{
+  Default
+  {
+	Radius 20;
+	Height 30;
+	+SOLID
+	+NOBLOOD
+	+DONTGIB
+	+NOICEDEATH
+	+NOINTERACTION
+	+ISOMETRICSPRITES
+  }
+
+  override void BeginPlay()
+  {
+	  Super.BeginPlay();
+	  ChangeStatNum(Thinker.STAT_FIRST_THINKING - 1); // For performance
+	  // For things spawned after play begins that don't need to interact or animate
+	  // If +SOLID flag enabled, it will still collide with geometry
+  }
+ 
+  States
+  {
+	Spawn:
+		CYC1 A -1;
+		stop;
   }
 }
 
@@ -305,3 +340,4 @@ class MyFistPuff : Actor
 		Stop;
 	}
 }
+
