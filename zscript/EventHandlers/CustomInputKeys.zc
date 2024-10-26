@@ -1,29 +1,5 @@
 class CameraMover : EventHandler
 {
-	override bool InputProcess (InputEvent e)
-	{
-		if (e.Type == InputEvent.Type_KeyDown)
-		{
-			int key1, key2;
-			[key1, key2] = Bindings.GetKeysForCommand("rotate_cam_left"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("ROTCAMLEFT", e.KeyScan);
-			}
-			[key1, key2] = Bindings.GetKeysForCommand("rotate_cam_right"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("ROTCAMRIGHT", e.KeyScan);
-			}
-			[key1, key2] = Bindings.GetKeysForCommand("center_cam"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("CENTERCAM", e.KeyScan);
-			}
-		}
-		return false;
-	}
-
 	override void NetworkProcess(ConsoleEvent e)
 	{
 		MyStandaloneGamePlayer pmo = MyStandaloneGamePlayer(players[e.Player].mo);
@@ -52,20 +28,6 @@ class ToggleAimAssist : EventHandler
 		{
 			isoaims[i] = CVar.GetCVar("IsoAimAssist", players[i]);
 		}
-	}
-
-	override bool InputProcess (InputEvent e)
-	{
-		if (e.Type == InputEvent.Type_KeyDown)
-		{
-			int key1, key2;
-			[key1, key2] = Bindings.GetKeysForCommand("iso_aim_assist"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("TOGGLEAIMASSIST", e.KeyScan);
-			}
-		}
-		return false;
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -156,33 +118,6 @@ class SelectionCycler : EventHandler
 			return abs((ln.v2.p.y - ln.v1.p.y)* mo.pos.x - (ln.v2.p.x - ln.v1.p.x)* mo.pos.y
 					   + ln.v2.p.x * ln.v1.p.y - ln.v2.p.y * ln.v1.p.x) / lnlength;
 		}
-	}
-
-	override bool InputProcess (InputEvent e)
-	{
-		if (e.Type == InputEvent.Type_KeyDown)
-		{
-			int key1, key2;			
-			[key1, key2] = Bindings.GetKeysForCommand("cycle_select"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("CYCLESEL", e.KeyScan);
-			}
-			[key1, key2] = Bindings.GetKeysForCommand("clear_select"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				SendNetworkEvent("CLEARSEL", e.KeyScan);
-			}
-			[key1, key2] = Bindings.GetKeysForCommand("use_selected"); // Define this command in keyconf or menudef lump
-			if ((key1 && key1 == e.KeyScan) || (key2 && key2 == e.KeyScan))
-			{
-				if (psels[consoleplayer].isosel)
-				{
-					SendNetworkEvent("USESEL", e.KeyScan);
-				}
-			}
-		}
-		return false;
 	}
 
 	override void NetworkProcess(ConsoleEvent e)

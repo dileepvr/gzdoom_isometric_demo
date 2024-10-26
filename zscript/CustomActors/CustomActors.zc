@@ -67,16 +67,18 @@ Class CylCorpse : actor
 	+NOBLOOD
 	+DONTGIB
 	+NOICEDEATH
-	+NOINTERACTION
+	//+NOINTERACTION // This removes physics (like moving with moving platforms)
 	+ISOMETRICSPRITES
   }
 
   override void BeginPlay()
   {
 	  Super.BeginPlay();
-	  ChangeStatNum(Thinker.STAT_FIRST_THINKING - 1); // For performance (dangerous code)
+	  bCrashed = true; // Use this instead to prevent "use selection"
+	  // ChangeStatNum(Thinker.STAT_FIRST_THINKING - 1); // For performance (dangerous code)
 	  // For things spawned after play begins that don't need to interact or animate
 	  // If +SOLID flag enabled, it will still collide with geometry
+	  // Won't work well on elevators or moving platforms though, lol
 	  // Sprite won't show if object was already on map
 	  // Use an eventhandler to set sprite on second worldtick
   }

@@ -134,9 +134,9 @@ class MyStandaloneGameHUD : BaseStatusBar
 		{
 			[am1, am2, am1amt, am2amt] = GetCurrentAmmo();
 			if (curwep.bMELEEWEAPON)
-				DrawString(mHUDFont, curwep.GetClassName(), (50, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
+				DrawString(mHUDFont, curwep.GetTag(), (50, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
 			else
-				DrawString(mHUDFont, curwep.GetClassName() .. FormatNumber(am1amt, 3), (44, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
+				DrawString(mHUDFont, curwep.GetTag() .. FormatNumber(am1amt, 3), (44, -20), DI_SCREEN_CENTER_BOTTOM|DI_TEXT_ALIGN_CENTER);
 		}
 	}
 
