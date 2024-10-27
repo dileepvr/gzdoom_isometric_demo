@@ -92,7 +92,10 @@ Skill nightmare
 //
 //
 //-------------------------------------------------------------------------------------------
-
+DefaultMap
+{
+  PixelRatio = 1 // Doom default stretches pixels vertically by 20%
+}
 Map "MAP01" "$TXT_MAP01"
 {
 	LightMode = 3
