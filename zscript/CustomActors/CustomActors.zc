@@ -139,7 +139,7 @@ class MyPlasmaBall : Actor
 {
 	Default
 	{
-		Radius 13;
+		Radius 5; // Doom plasmaball is 13. This helps slip through gaps
 		Height 8;
 		Speed 15;
 		Damage 5;
