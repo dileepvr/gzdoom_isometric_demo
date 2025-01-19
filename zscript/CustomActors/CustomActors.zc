@@ -5,6 +5,7 @@ Class Cylinder : actor
 	Radius 20;
 	Height 40;
 	Health 100;
+	Tag "Barrel";
 	+SOLID
 	+SHOOTABLE
 	+NOBLOOD
@@ -149,6 +150,7 @@ class MyPlasmaBall : Actor
 		+ISOMETRICSPRITES
 		RenderStyle "Add";
 		Alpha 0.5;
+		Tag "PlasmaBall";
 		SeeSound "weapons/plasmaf";
 		DeathSound "weapons/plasmax";
 		Obituary "%o was melted by %k's plasma gun.";
